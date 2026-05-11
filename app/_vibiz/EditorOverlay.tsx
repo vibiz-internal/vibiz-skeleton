@@ -28,16 +28,25 @@ type SelectionPayload = {
 };
 
 function findDebugSource(el: HTMLElement): string | null {
+  // Primary: data-vibiz-src attribute injected by the Babel locator
+  // plugin at build-time (works regardless of React version).
+  let cur: HTMLElement | null = el;
+  while (cur) {
+    const v = cur.getAttribute && cur.getAttribute("data-vibiz-src");
+    if (v) return v;
+    cur = cur.parentElement;
+  }
+  // Fallback: legacy React fiber `_debugSource` (React ≤ 18).
   const fiberKey = Object.keys(el).find((k) => k.startsWith("__reactFiber"));
   if (!fiberKey) return null;
-  let cur: any = (el as any)[fiberKey];
-  while (cur) {
-    const ds = cur._debugSource;
+  let fiber: any = (el as any)[fiberKey];
+  while (fiber) {
+    const ds = fiber._debugSource;
     if (ds && typeof ds.fileName === "string") {
       const rel = ds.fileName.split("/").slice(-4).join("/");
       return `${rel}:${ds.lineNumber}:${ds.columnNumber ?? 0}`;
     }
-    cur = cur.return;
+    fiber = fiber.return;
   }
   return null;
 }
