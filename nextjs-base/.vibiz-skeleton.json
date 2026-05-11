@@ -1,8 +1,0 @@
-{
-  "kind": "nextjs-base",
-  "scaffolded": true,
-  "framework": "next.js",
-  "router": "app",
-  "styling": "tailwind-v4",
-  "language": "typescript"
-}
