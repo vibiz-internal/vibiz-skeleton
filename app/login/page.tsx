@@ -1,36 +1,42 @@
-// Sign-in page. Server Component with a server action that delegates to
-// Neon Auth (`auth.signIn.email`). On success redirects home; on failure
-// re-renders the form with the error message via a `?error=` query param.
+"use client";
+
+// Sign-in page. Client Component so the form posts through the
+// Neon Auth proxy (`/api/auth/sign-in/email`) using the browser's
+// fetch — guaranteeing a valid Origin header reaches the hosted
+// better-auth backend. The previous server-action flow relied on
+// the incoming request's Origin header, which gets dropped or
+// rewritten on some Next.js + Vercel edge configurations and
+// surfaces as "Invalid origin" at sign-in.
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
-import { getAuth } from "@/lib/auth/server";
+import { authClient } from "@/lib/auth/client";
 
-export const dynamic = "force-dynamic";
+export default function LoginPage() {
+  const router = useRouter();
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-type SearchParams = Promise<{ error?: string }>;
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setError(null);
+    setPending(true);
+    const form = new FormData(e.currentTarget);
+    const email = String(form.get("email") ?? "");
+    const password = String(form.get("password") ?? "");
 
-export default async function LoginPage({
-  searchParams,
-}: {
-  searchParams: SearchParams;
-}) {
-  const { error } = await searchParams;
-
-  async function signInAction(formData: FormData) {
-    "use server";
-    const email = String(formData.get("email") ?? "");
-    const password = String(formData.get("password") ?? "");
-
-    const { error: signInError } = await getAuth().signIn.email({
+    const { error: signInError } = await authClient.signIn.email({
       email,
       password,
     });
     if (signInError) {
-      const message = signInError.message ?? "Sign-in failed.";
-      redirect(`/login?error=${encodeURIComponent(message)}`);
+      setError(signInError.message ?? "Sign-in failed.");
+      setPending(false);
+      return;
     }
-    redirect("/");
+    router.push("/");
+    router.refresh();
   }
 
   return (
@@ -48,7 +54,7 @@ export default async function LoginPage({
         </div>
       ) : null}
 
-      <form action={signInAction} className="flex flex-col gap-3">
+      <form onSubmit={onSubmit} className="flex flex-col gap-3">
         <label className="flex flex-col gap-1 text-xs uppercase tracking-wider text-zinc-500">
           Email
           <input
@@ -71,9 +77,10 @@ export default async function LoginPage({
         </label>
         <button
           type="submit"
-          className="mt-2 rounded-md border border-zinc-700 px-3 py-2 text-sm hover:bg-zinc-900"
+          disabled={pending}
+          className="mt-2 rounded-md border border-zinc-700 px-3 py-2 text-sm hover:bg-zinc-900 disabled:opacity-60"
         >
-          Sign in
+          {pending ? "Signing in…" : "Sign in"}
         </button>
       </form>
 
