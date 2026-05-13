@@ -1,5 +1,14 @@
 # Project rules
 
+## UI components
+
+- **shadcn/ui is pre-installed**. Config in `components.json`, primitives in `components/ui/`. Always prefer composing from these over hand-rolling buttons/inputs/cards.
+- Shipped: `Button`, `Input`, `Label`, `Card` (+ `CardHeader`, `CardTitle`, `CardDescription`, `CardContent`, `CardFooter`, `CardAction`). Import via `@/components/ui/<name>`.
+- Need more? Run `npx shadcn@latest add <component>` (e.g. `dialog`, `dropdown-menu`, `sonner`, `form`, `select`, `tabs`). The CLI drops files into `components/ui/` and installs the Radix deps.
+- Theming via CSS vars in `app/globals.css` (`--primary`, `--background`, `--muted`, etc.). The app defaults to dark mode (`class="dark"` on `<html>`). Override tokens or change to light by removing the class.
+- Icons: `lucide-react` is installed. `import { ChevronRight } from "lucide-react"`.
+- Tailwind v4 — no `tailwind.config.ts`. All tokens live in `globals.css` under `@theme inline`.
+
 ## Database schema
 
 - The schema lives in `db/schema.ts` (Drizzle).

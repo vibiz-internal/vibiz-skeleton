@@ -4,6 +4,14 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { getAuth } from "@/lib/auth/server";
 
 export const dynamic = "force-dynamic";
@@ -31,84 +39,81 @@ export default async function Home() {
   return (
     <main className="mx-auto flex min-h-screen max-w-2xl flex-col gap-6 px-6 py-16">
       <header>
-        <p className="text-xs uppercase tracking-[0.2em] text-zinc-500">
+        <p className="text-muted-foreground text-xs uppercase tracking-[0.2em]">
           New project
         </p>
         <h1 className="mt-2 text-3xl font-semibold tracking-tight">
           Skeleton ready.
         </h1>
-        <p className="mt-2 text-sm text-zinc-400">
+        <p className="text-muted-foreground mt-2 text-sm">
           Edit{" "}
-          <code className="rounded bg-zinc-900 px-1.5 py-0.5 text-[12px]">
+          <code className="bg-muted rounded px-1.5 py-0.5 text-[12px]">
             app/page.tsx
           </code>{" "}
           to start. Delete{" "}
-          <code className="rounded bg-zinc-900 px-1.5 py-0.5 text-[12px]">
+          <code className="bg-muted rounded px-1.5 py-0.5 text-[12px]">
             .vibiz-skeleton.json
           </code>{" "}
           when you take over.
         </p>
       </header>
 
-      <section className="rounded-xl border border-zinc-800 p-4">
-        {!authReady ? (
-          <div className="flex flex-col gap-2">
-            <p className="text-sm text-amber-400">Auth not configured</p>
-            <p className="text-xs text-zinc-400">{authError}</p>
-          </div>
-        ) : user ? (
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-sm">
-              Logged in as{" "}
-              <span className="font-medium">{user.email ?? user.id}</span>
-            </p>
-            <form action={signOutAction}>
-              <button
-                type="submit"
-                className="rounded-md border border-zinc-700 px-3 py-1.5 text-xs hover:bg-zinc-900"
-              >
-                Sign out
-              </button>
-            </form>
-          </div>
-        ) : (
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-sm text-zinc-400">You are not signed in.</p>
-            <div className="flex gap-2">
-              <Link
-                href="/login"
-                className="rounded-md border border-zinc-700 px-3 py-1.5 text-xs hover:bg-zinc-900"
-              >
-                Sign in
-              </Link>
-              <Link
-                href="/signup"
-                className="rounded-md border border-zinc-700 px-3 py-1.5 text-xs hover:bg-zinc-900"
-              >
-                Sign up
-              </Link>
+      <Card>
+        <CardContent>
+          {!authReady ? (
+            <div className="flex flex-col gap-2">
+              <p className="text-destructive text-sm">Auth not configured</p>
+              <p className="text-muted-foreground text-xs">{authError}</p>
             </div>
-          </div>
-        )}
-      </section>
+          ) : user ? (
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-sm">
+                Logged in as{" "}
+                <span className="font-medium">{user.email ?? user.id}</span>
+              </p>
+              <form action={signOutAction}>
+                <Button type="submit" variant="outline" size="sm">
+                  Sign out
+                </Button>
+              </form>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-muted-foreground text-sm">
+                You are not signed in.
+              </p>
+              <div className="flex gap-2">
+                <Button asChild variant="outline" size="sm">
+                  <Link href="/login">Sign in</Link>
+                </Button>
+                <Button asChild size="sm">
+                  <Link href="/signup">Sign up</Link>
+                </Button>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       <section className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <Card title="Framework" value="Next.js 16 - App Router" />
-        <Card title="Styling" value="Tailwind CSS v4" />
-        <Card title="Database" value="Postgres - Drizzle ORM" />
-        <Card title="Auth" value="Neon Auth (Better Auth backend)" />
+        <StackCard title="Framework" value="Next.js 16 - App Router" />
+        <StackCard title="Styling" value="Tailwind v4 + shadcn/ui" />
+        <StackCard title="Database" value="Postgres - Drizzle ORM" />
+        <StackCard title="Auth" value="Neon Auth (Better Auth backend)" />
       </section>
     </main>
   );
 }
 
-function Card({ title, value }: { title: string; value: string }) {
+function StackCard({ title, value }: { title: string; value: string }) {
   return (
-    <div className="rounded-xl border border-zinc-800 p-3">
-      <p className="text-[10px] uppercase tracking-wider text-zinc-500">
-        {title}
-      </p>
-      <p className="mt-1 text-sm font-medium">{value}</p>
-    </div>
+    <Card className="gap-1 py-3">
+      <CardHeader className="px-3">
+        <CardDescription className="text-[10px] uppercase tracking-wider">
+          {title}
+        </CardDescription>
+        <CardTitle className="text-sm font-medium">{value}</CardTitle>
+      </CardHeader>
+    </Card>
   );
 }

@@ -17,12 +17,18 @@
   "dependencies": {
     "@neondatabase/auth": "^0.3.0-beta",
     "@neondatabase/serverless": "^1.1.0",
+    "@radix-ui/react-label": "^2.1.7",
+    "@radix-ui/react-slot": "^1.2.3",
     "@sapiom/fetch": "^0.5.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "drizzle-orm": "^0.45.2",
+    "lucide-react": "^0.475.0",
     "next": "16.2.4",
     "pg": "^8.13.1",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "tailwind-merge": "^3.3.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -33,6 +39,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.4",
     "tailwindcss": "^4",
+    "tw-animate-css": "^1.3.0",
     "typescript": "^5"
   }
 }
