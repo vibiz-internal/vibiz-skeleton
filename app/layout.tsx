@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 import "./globals.css";
+import { Toaster } from "@/components/ui/sonner";
 import { VibizEditorOverlay } from "./_vibiz/EditorOverlay";
 
 const geistSans = Geist({
@@ -30,7 +32,8 @@ export default function RootLayout({
       className={`dark ${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
-        {children}
+        <NuqsAdapter>{children}</NuqsAdapter>
+        <Toaster />
         <VibizEditorOverlay />
       </body>
     </html>
