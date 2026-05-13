@@ -45,7 +45,7 @@ export default function SignupPage() {
           Create your account
         </h1>
         <p className="mt-1 text-sm text-zinc-400">
-          Email and password — that's it.
+          Email and password — that&apos;s it.
         </p>
       </header>
 
