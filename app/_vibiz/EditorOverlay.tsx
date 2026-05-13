@@ -60,6 +60,10 @@ export function VibizEditorOverlay() {
   useEffect(() => {
     if (typeof window === "undefined") return;
     const params = new URLSearchParams(window.location.search);
+    // Reading window.location.search at render time would cause a
+    // hydration mismatch (server renders without the URL), so we
+    // intentionally setState from inside the mount effect here.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (params.get("vibiz") === "edit") setEnabled(true);
   }, []);
 
