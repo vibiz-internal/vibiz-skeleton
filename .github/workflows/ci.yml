@@ -23,8 +23,12 @@ jobs:
           node-version: "22"
           cache: "npm"
 
+      # `npm install` (not `npm ci`) because the CTO frequently adds
+      # dependencies on a turn without regenerating package-lock.json
+      # — strict frozen-lockfile would fail every such PR. Vercel
+      # uses `npm install` too, so this matches the source of truth.
       - name: Install dependencies
-        run: npm ci --no-audit --no-fund
+        run: npm install --no-audit --no-fund
 
       - name: Typecheck
         run: npm run typecheck
@@ -33,8 +37,9 @@ jobs:
         run: npm run lint
 
       # `next build` directly (NOT `npm run build`) so the `prebuild`
-      # script — which runs `drizzle-kit migrate` against DIRECT_URL —
-      # is skipped. CI has no database; we just want to verify the app
-      # compiles. Migrations are applied for real at Vercel build time.
+      # script — which applies Drizzle migrations against DIRECT_URL
+      # — is skipped. CI has no database; we just want to verify the
+      # app compiles. Migrations are applied for real at Vercel build
+      # time.
       - name: Build (skipping prebuild)
         run: npx --no-install next build
