@@ -1,0 +1,49 @@
+name: Protect Applied Migrations
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "drizzle/**"
+  pull_request:
+    branches: [main]
+    paths:
+      - "drizzle/**"
+
+jobs:
+  check-immutability:
+    name: deny rename/delete under drizzle/
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect deleted or renamed migration files
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE="origin/${{ github.base_ref }}"
+            HEAD="HEAD"
+          else
+            # On push to main, diff against the previous commit on main.
+            BASE="${{ github.event.before }}"
+            HEAD="${{ github.sha }}"
+            # First commit on a brand-new branch has BASE = 0000...; skip.
+            case "$BASE" in
+              0000000000000000000000000000000000000000) exit 0 ;;
+            esac
+          fi
+
+          DELETED=$(git diff --name-only --diff-filter=DR "$BASE...$HEAD" -- drizzle/ || true)
+          if [ -n "$DELETED" ]; then
+            echo "::error::Applied Drizzle migrations cannot be deleted or renamed."
+            echo "The following files were removed or renamed under drizzle/:"
+            echo "$DELETED" | sed 's/^/  - /'
+            echo ""
+            echo "Migrations are forward-only history. Add a new migration via"
+            echo "  npm run db:gen"
+            echo "instead of editing existing ones."
+            exit 1
+          fi
+
+          echo "OK — no migration files were removed or renamed."
