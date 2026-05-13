@@ -1,41 +1,33 @@
 // Drizzle schema starter.
 //
 // Neon's Better Auth provider provisions a `neon_auth.user` table (and
-// siblings: account, session, …). This file declares the columns we
-// actually need to JOIN/FK against — Drizzle treats `neon_auth` as
-// EXTERNAL: never generate migrations against it. `drizzle.config.ts`
-// pins `schemaFilter: ['public']` so drizzle-kit only manages `public`.
+// siblings: account, session, …) AT NEON's SIDE — Vibiz does not own
+// that schema and you must NEVER declare it here with `pgSchema(...)`.
+// drizzle-kit would dutifully include it in every generated migration
+// and `drizzle-kit migrate` would then fail at deploy time with
+// `schema "neon_auth" already exists`.
 //
-// Reference `authUser.id` for FK targets only. Add your own tables in
-// the `public` schema below.
-
-import { boolean, pgSchema, text, timestamp, uuid } from "drizzle-orm/pg-core";
-
-// External schema — managed by Neon Auth, NOT Drizzle.
-export const neonAuth = pgSchema("neon_auth");
-
-// `neon_auth.user` is the canonical Better Auth user table. Note the
-// camelCased physical column names (Better Auth doesn't snake_case).
-export const authUser = neonAuth.table("user", {
-  id: uuid("id").primaryKey(),
-  name: text("name").notNull(),
-  email: text("email").notNull(),
-  emailVerified: boolean("emailVerified").notNull(),
-  image: text("image"),
-  createdAt: timestamp("createdAt", { withTimezone: true }).notNull(),
-  updatedAt: timestamp("updatedAt", { withTimezone: true }).notNull(),
-});
+// `schemaFilter: ['public']` in `drizzle.config.ts` only filters
+// introspection of the live DB; it does NOT filter declarations made
+// from TS. So the rule is simply: keep this file PURE PUBLIC.
+//
+// Need a foreign key onto the Neon Auth user? Store the user id as a
+// plain `text("user_id")` (Better Auth ids are strings). You can still
+// query joins via raw SQL or by importing the user type from Better
+// Auth's client — you just don't get a Drizzle-level relation.
+//
+// Add your own tables in the `public` schema below.
 
 // ---------------------------------------------------------------------------
 // Your tables go here. Example shape — uncomment and adapt:
 //
-// import { pgTable, serial, text, timestamp, uuid } from "drizzle-orm/pg-core";
+// import { pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
 //
 // export const posts = pgTable("posts", {
 //   id: serial("id").primaryKey(),
-//   userId: uuid("user_id")
-//     .notNull()
-//     .references(() => authUser.id, { onDelete: "cascade" }),
+//   // Better Auth user id (string). No FK — `neon_auth.user` is owned
+//   // by Neon, not Drizzle. Join in queries, not in the schema.
+//   userId: text("user_id").notNull(),
 //   title: text("title").notNull(),
 //   body: text("body"),
 //   createdAt: timestamp("created_at", { withTimezone: true })
