@@ -35,6 +35,18 @@ Common hooks shipped in `hooks/` — copy/adapt rather than re-rolling:
 - Do not run `db:push` in production — it's only for the dev sandbox. Vercel applies migrations at build time via the `prebuild` step (`drizzle-kit migrate`).
 - The `neon_auth` schema (Neon Auth's Better Auth tables) is managed by Neon and excluded from Drizzle via `schemaFilter: ["public"]` in `drizzle.config.ts`. Don't touch it.
 
+## Landing + dashboard scaffolding
+
+The skeleton ships a working **marketing landing** at `/` and a stub
+**dashboard** at `/dashboard`. Use them, don't replace the whole shell:
+
+- `components/site-header.tsx` — sticky responsive header with logo, desktop nav links, mobile `Sheet` menu, and an auth-aware right side (Sign in/Sign up buttons OR avatar `DropdownMenu` with Dashboard + Sign out). Reuses across landing and dashboard.
+- `components/site-footer.tsx` — multi-column footer with brand block + Product/Company/Legal links + social + copyright.
+- `app/page.tsx` — landing structure: header → hero → features grid → CTA → FAQ anchor → footer. CTAs point to `/dashboard` if signed in, otherwise `/signup`.
+- `app/dashboard/page.tsx` — auth-gated (`redirect("/login")` when no session), shows stat cards + a "what's next" guide. Replace with the real product UI.
+
+Brand placeholder is **"Acme"** in both header and footer — change in those two files. Copy throughout the landing is intentionally generic; replace the hero h1, the feature blurbs, and the CTA copy with what your product actually does.
+
 ## Database queries
 
 - Pattern guide in `lib/db/queries.ts` — typed Drizzle queries with these conventions:
