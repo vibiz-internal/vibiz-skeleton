@@ -35,3 +35,8 @@
 //     .defaultNow(),
 // });
 // ---------------------------------------------------------------------------
+
+// Marker export so TypeScript treats this file as a module even when
+// no tables have been declared yet. Safe to leave in place; remove it
+// once you add real exports above if you prefer a clean file.
+export {};
