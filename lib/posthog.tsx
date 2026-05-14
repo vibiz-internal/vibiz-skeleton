@@ -55,6 +55,11 @@ export function Analytics({ children }: { children: React.ReactNode }) {
       api_host: host,
       capture_pageview: true,
       capture_pageleave: true,
+      // Auto-capture window.onerror + unhandledrejection as `$exception`
+      // events. Vibiz polls these via webhook and creates a CTO task per
+      // unique fingerprint so bugs in the live app become repair work
+      // automatically. Do not disable.
+      capture_exceptions: true,
       // Session recording defaults to ON when enabled in the PostHog
       // project settings — Vibiz turns it on for the shared project.
       // Toggle off for individual visitors with posthog.opt_out_capturing()

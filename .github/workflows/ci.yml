@@ -30,14 +30,19 @@ jobs:
       - name: Install dependencies
         run: npm install --no-audit --no-fund
 
-      # Guard: lib/posthog.tsx is Vibiz-managed. The CTO agent has
-      # historically regressed this file by replacing the posthog-js
-      # SDK provider with a raw `fetch('/capture/')` implementation,
-      # which silently breaks session replay, autocapture, rage-click
-      # detection, and identification cookies. Fail the build hard if:
-      #   1. the canonical SDK import is missing from lib/posthog.tsx
+      # Guard: PostHog wiring is Vibiz-managed. The CTO agent has
+      # historically regressed `lib/posthog.tsx` by replacing the
+      # posthog-js SDK provider with a raw `fetch('/capture/')`
+      # implementation, which silently breaks session replay,
+      # autocapture, rage-click detection, and identification cookies.
+      # `lib/posthog-server.ts` + `instrumentation.ts > onRequestError`
+      # forward server `$exception` events to PostHog — Vibiz consumes
+      # them to create CTO bug-repair tasks per unique fingerprint.
+      # Fail the build hard if:
+      #   1. the SDK imports are missing from any of the three files
       #   2. a parallel raw-capture file (posthog-events.ts, etc.) was
       #      added under lib/
+      #   3. raw POST to /capture/ is detected anywhere
       - name: Guard PostHog wiring
         run: |
           set -e
@@ -45,7 +50,15 @@ jobs:
             echo "::error file=lib/posthog.tsx::lib/posthog.tsx must import posthog-js (the SDK). Raw fetch implementations break session replay + autocapture. See AGENTS.md > Analytics."
             exit 1
           fi
-          rogue=$(find lib -maxdepth 2 -type f \( -name "posthog-events.*" -o -name "posthog-capture.*" -o -name "posthog-client.*" -o -name "posthog-track.*" \) ! -name "posthog.tsx" 2>/dev/null || true)
+          if [ -f lib/posthog-server.ts ] && ! grep -q 'from "posthog-node"' lib/posthog-server.ts; then
+            echo "::error file=lib/posthog-server.ts::lib/posthog-server.ts must import posthog-node. Raw fetch implementations break the Vibiz auto-bug-task pipeline. See AGENTS.md > Analytics."
+            exit 1
+          fi
+          if [ -f instrumentation.ts ] && ! grep -q 'onRequestError' instrumentation.ts; then
+            echo "::error file=instrumentation.ts::instrumentation.ts must export onRequestError to forward server errors to PostHog. See AGENTS.md > Analytics."
+            exit 1
+          fi
+          rogue=$(find lib -maxdepth 2 -type f \( -name "posthog-events.*" -o -name "posthog-capture.*" -o -name "posthog-client.*" -o -name "posthog-track.*" \) ! -name "posthog.tsx" ! -name "posthog-server.ts" 2>/dev/null || true)
           if [ -n "$rogue" ]; then
             echo "::error::Unauthorized parallel PostHog files detected — delete and use posthog.capture() from posthog-js instead:"
             echo "$rogue"
