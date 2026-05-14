@@ -30,6 +30,33 @@ jobs:
       - name: Install dependencies
         run: npm install --no-audit --no-fund
 
+      # Guard: lib/posthog.tsx is Vibiz-managed. The CTO agent has
+      # historically regressed this file by replacing the posthog-js
+      # SDK provider with a raw `fetch('/capture/')` implementation,
+      # which silently breaks session replay, autocapture, rage-click
+      # detection, and identification cookies. Fail the build hard if:
+      #   1. the canonical SDK import is missing from lib/posthog.tsx
+      #   2. a parallel raw-capture file (posthog-events.ts, etc.) was
+      #      added under lib/
+      - name: Guard PostHog wiring
+        run: |
+          set -e
+          if ! grep -q 'from "posthog-js"' lib/posthog.tsx; then
+            echo "::error file=lib/posthog.tsx::lib/posthog.tsx must import posthog-js (the SDK). Raw fetch implementations break session replay + autocapture. See AGENTS.md > Analytics."
+            exit 1
+          fi
+          rogue=$(find lib -maxdepth 2 -type f \( -name "posthog-events.*" -o -name "posthog-capture.*" -o -name "posthog-client.*" -o -name "posthog-track.*" \) ! -name "posthog.tsx" 2>/dev/null || true)
+          if [ -n "$rogue" ]; then
+            echo "::error::Unauthorized parallel PostHog files detected — delete and use posthog.capture() from posthog-js instead:"
+            echo "$rogue"
+            exit 1
+          fi
+          if grep -RE 'fetch\([^)]*"/capture/?"|fetch\([^)]*posthog\.com/capture' lib app components 2>/dev/null; then
+            echo "::error::Raw POST to PostHog /capture/ endpoint detected. Use posthog.capture() from posthog-js — see AGENTS.md > Analytics."
+            exit 1
+          fi
+          echo "✓ PostHog wiring guard passed"
+
       - name: Typecheck
         run: npm run typecheck
 

@@ -1,5 +1,24 @@
 "use client";
 
+// ⚠️  VIBIZ-MANAGED — DO NOT MODIFY THIS FILE.
+//
+// This is the ONLY allowed PostHog wiring in the project. Replacing it
+// (or adding a parallel `lib/posthog-events.ts`, `lib/posthog-capture.ts`,
+// or any file that POSTs to `/capture/` directly via `fetch`) breaks:
+//   - Session replay (the recorder JS only loads via posthog-js)
+//   - Click autocapture, scroll/rage-click detection
+//   - Cross-page user identification cookies
+//   - PostHog feature flags / experiments
+//
+// For custom semantic events, do NOT touch this file — just call from
+// anywhere in the app:
+//
+//   import posthog from "posthog-js";
+//   posthog.capture("habit_completed", { habit_id, streak });
+//
+// The CI guard (`.github/workflows/ci.yml`) will fail the build if this
+// file is replaced or if a parallel raw-fetch capture file is added.
+
 import posthog from "posthog-js";
 import { PostHogProvider } from "posthog-js/react";
 import { useEffect } from "react";

@@ -28,7 +28,8 @@ DESIGN.md follows the [Google Labs DESIGN.md spec](https://github.com/google-lab
 
 ## Analytics (PostHog)
 
-- **PostHog is pre-installed** (`posthog-js` dep + `lib/posthog.tsx` Analytics provider mounted in `app/layout.tsx`). Pageviews, pageleaves, and click autocapture are tracked automatically once the platform injects the env vars.
+- **PostHog is pre-installed** (`posthog-js` dep + `lib/posthog.tsx` Analytics provider mounted in `app/layout.tsx`). Pageviews, pageleaves, click autocapture, and **session replay** are tracked automatically once the platform injects the env vars.
+- **⚠️ DO NOT modify `lib/posthog.tsx`. DO NOT add a parallel `lib/posthog-events.ts`, `lib/posthog-capture.ts`, or any file that POSTs to PostHog's `/capture/` endpoint via `fetch`.** Re-implementing PostHog with raw `fetch` looks "simpler" but silently kills session replay (the recorder JS only loads via `posthog-js`), autocapture, rage-click detection, and identification cookies. The CI guard fails the build if you do. For custom events, just `import posthog from "posthog-js"` and call `posthog.capture()` from anywhere.
 - **Required env (Vibiz injects them, do NOT hardcode)**: `NEXT_PUBLIC_POSTHOG_KEY`, `NEXT_PUBLIC_POSTHOG_HOST`, `NEXT_PUBLIC_POSTHOG_BUSINESS_SLUG`. When any is missing the provider is a no-op — local dev without keys still works.
 - **Custom events**: `import posthog from "posthog-js"; posthog.capture("habit_completed", { habitId, streak })`. Use snake_case event names, keep payload small. The `business` group is set globally at init — every event inherits it; do NOT pass `business` in properties.
 - **Per-user identification** (when the user logs in via Neon Auth): `posthog.identify(userId, { email })` inside the post-login flow. Reset on logout with `posthog.reset()`.
