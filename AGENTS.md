@@ -1,5 +1,17 @@
 # Project rules
 
+## Brand & visual identity — read DESIGN.md first
+
+**`DESIGN.md` (at repo root) is the source of truth for the brand.** Before composing any UI — landing, dashboard, marketing surface, settings page — read it. It lists the canonical colors, typography scale, radius scale, spacing, and component variants this app commits to.
+
+How it works:
+- **Tokens in DESIGN.md = canonical.** `app/globals.css` is the implementation. If they drift, this file wins; bring `globals.css` back into line.
+- **shadcn primitives consume the tokens automatically.** A `Button`, `Card`, `Input` already reads `--primary`, `--background`, `--radius`, etc. You almost never need to touch the primitive files — just update the tokens.
+- **When the brand changes** (new accent, new font, new radius scale), update **both** DESIGN.md AND `app/globals.css`. If you only update one, the brand drifts.
+- **When you need a token that doesn't exist** (e.g. `--warning`, `--chart-1 … --chart-5`), add it to DESIGN.md FIRST, then mirror in `globals.css` under `@theme inline`, then use it. Don't hardcode hex / oklch values inline.
+
+DESIGN.md follows the [Google Labs DESIGN.md spec](https://github.com/google-labs-code/design.md) — YAML frontmatter for machine-readable tokens, markdown body for design rationale.
+
 ## UI components
 
 - **shadcn/ui is pre-installed**. Config in `components.json`, primitives in `components/ui/`. Always prefer composing from these over hand-rolling buttons/inputs/cards.
