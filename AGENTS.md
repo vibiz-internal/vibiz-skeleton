@@ -26,6 +26,14 @@ DESIGN.md follows the [Google Labs DESIGN.md spec](https://github.com/google-lab
 - Icons: `lucide-react` is installed. `import { ChevronRight } from "lucide-react"`.
 - Tailwind v4 — no `tailwind.config.ts`. All tokens live in `globals.css` under `@theme inline`.
 
+## Analytics (PostHog)
+
+- **PostHog is pre-installed** (`posthog-js` dep + `lib/posthog.tsx` Analytics provider mounted in `app/layout.tsx`). Pageviews, pageleaves, and click autocapture are tracked automatically once the platform injects the env vars.
+- **Required env (Vibiz injects them, do NOT hardcode)**: `NEXT_PUBLIC_POSTHOG_KEY`, `NEXT_PUBLIC_POSTHOG_HOST`, `NEXT_PUBLIC_POSTHOG_BUSINESS_SLUG`. When any is missing the provider is a no-op — local dev without keys still works.
+- **Custom events**: `import posthog from "posthog-js"; posthog.capture("habit_completed", { habitId, streak })`. Use snake_case event names, keep payload small. The `business` group is set globally at init — every event inherits it; do NOT pass `business` in properties.
+- **Per-user identification** (when the user logs in via Neon Auth): `posthog.identify(userId, { email })` inside the post-login flow. Reset on logout with `posthog.reset()`.
+- **Opt-out of recording on sensitive routes** (e.g. password reset, payment forms): `posthog.opt_out_capturing()` on mount of that page, `posthog.opt_in_capturing()` on unmount.
+
 ## URL state
 
 - **`nuqs`** is installed and the `<NuqsAdapter>` is mounted in `app/layout.tsx`. Use it for any state that should survive a refresh or be shareable via URL — filters, pagination, search query, "open modal" flags.
