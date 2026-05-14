@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
 // Babel config — used only in dev to inject `data-vibiz-src` attrs on
 // JSX nodes for the Vibiz visual editor. In production Next.js uses
 // SWC + the standard preset; this file is consulted but the plugin is

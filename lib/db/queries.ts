@@ -15,6 +15,12 @@
 // Imports are commented out until db/schema.ts actually exports `posts`.
 // Uncomment + remove the `as any` shims when you wire up real tables.
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
+// ↑ This file is a stub-template. Parameters are intentionally unused
+// until the CTO wires up a real schema. When you copy a function out
+// of here into `lib/db/<table>.ts` and replace the `throw new Error`
+// body with a real query, REMOVE this disable.
+
 import { and, desc, eq, lt } from "drizzle-orm";
 
 import { getDb } from "@/lib/db";
@@ -28,8 +34,6 @@ type Db = ReturnType<typeof getDb>;
 
 /** Fetch one row by primary key. Returns null when not found. */
 export async function getPostById(id: number, db: Db = getDb()) {
-  const _ = db; // silence unused while example is stubbed; remove when wired
-  void id;
   // const [row] = await db.select().from(posts).where(eq(posts.id, id)).limit(1);
   // return row ?? null;
   throw new Error("queries.ts is a template — wire up db/schema.ts first");
@@ -45,13 +49,6 @@ export async function listPosts(
   db: Db = getDb(),
 ) {
   const limit = Math.min(opts.limit ?? 20, 100);
-  void db;
-  void limit;
-  void opts.cursor;
-  void and;
-  void desc;
-  void lt;
-  void eq;
   // const where = opts.cursor !== undefined ? lt(posts.id, opts.cursor) : undefined;
   // return db
   //   .select()
@@ -75,8 +72,6 @@ export async function createPost(
   input: { userId: string; title: string; body?: string },
   db: Db = getDb(),
 ) {
-  void db;
-  void input;
   // const [row] = await db.insert(posts).values(input).returning();
   // return row;
   throw new Error("queries.ts is a template — wire up db/schema.ts first");
@@ -88,9 +83,6 @@ export async function updatePost(
   patch: Partial<{ title: string; body: string }>,
   db: Db = getDb(),
 ) {
-  void db;
-  void id;
-  void patch;
   // const [row] = await db
   //   .update(posts)
   //   .set(patch)
@@ -102,8 +94,6 @@ export async function updatePost(
 
 /** Hard delete by id. Returns true when something was actually deleted. */
 export async function deletePost(id: number, db: Db = getDb()) {
-  void db;
-  void id;
   // const rows = await db.delete(posts).where(eq(posts.id, id)).returning({ id: posts.id });
   // return rows.length > 0;
   throw new Error("queries.ts is a template — wire up db/schema.ts first");
@@ -131,7 +121,6 @@ export async function withTransaction<T>(
   // For real transactional work, swap to the `pg` driver (already in
   // package.json). This wrapper exists so the function shape is in place
   // — uncomment and switch the driver when you need it.
-  void db;
   return fn(db);
   // return db.transaction(fn);
 }
