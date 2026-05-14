@@ -1,28 +1,28 @@
 ---
 version: alpha
 name: Vibiz Skeleton Default
-description: Neutral dark-mode-default starter brand built on shadcn/ui (new-york style, zinc base) over Tailwind v4. The defaults are intentionally quiet — replace tokens here when you brand the app for a real business. The CTO reads this file before composing UI and mirrors any change into app/globals.css.
+description: Neutral light-mode-default starter brand built on shadcn/ui (new-york style, zinc base) over Tailwind v4. The defaults are intentionally quiet — replace tokens here when you brand the app for a real business. The CTO reads this file before composing UI and mirrors any change into app/globals.css.
 
 colors:
-  background: "oklch(0.145 0 0)"
-  foreground: "oklch(0.985 0 0)"
-  card: "oklch(0.205 0 0)"
-  card-foreground: "oklch(0.985 0 0)"
-  popover: "oklch(0.205 0 0)"
-  popover-foreground: "oklch(0.985 0 0)"
-  primary: "oklch(0.922 0 0)"
-  primary-foreground: "oklch(0.205 0 0)"
-  secondary: "oklch(0.269 0 0)"
-  secondary-foreground: "oklch(0.985 0 0)"
-  muted: "oklch(0.269 0 0)"
-  muted-foreground: "oklch(0.708 0 0)"
-  accent: "oklch(0.269 0 0)"
-  accent-foreground: "oklch(0.985 0 0)"
-  destructive: "oklch(0.704 0.191 22.216)"
+  background: "oklch(1 0 0)"
+  foreground: "oklch(0.145 0 0)"
+  card: "oklch(1 0 0)"
+  card-foreground: "oklch(0.145 0 0)"
+  popover: "oklch(1 0 0)"
+  popover-foreground: "oklch(0.145 0 0)"
+  primary: "oklch(0.205 0 0)"
+  primary-foreground: "oklch(0.985 0 0)"
+  secondary: "oklch(0.97 0 0)"
+  secondary-foreground: "oklch(0.205 0 0)"
+  muted: "oklch(0.97 0 0)"
+  muted-foreground: "oklch(0.556 0 0)"
+  accent: "oklch(0.97 0 0)"
+  accent-foreground: "oklch(0.205 0 0)"
+  destructive: "oklch(0.577 0.245 27.325)"
   destructive-foreground: "oklch(0.985 0 0)"
-  border: "oklch(1 0 0 / 10%)"
-  input: "oklch(1 0 0 / 15%)"
-  ring: "oklch(0.556 0 0)"
+  border: "oklch(0.922 0 0)"
+  input: "oklch(0.922 0 0)"
+  ring: "oklch(0.708 0 0)"
 
 typography:
   display-xl:
@@ -156,6 +156,7 @@ components:
     rounded: "{rounded.xl}"
     border: "1px solid {colors.border}"
     padding: 24px
+    shadow: "0 1px 2px rgba(0,0,0,0.04)"
   badge-default:
     backgroundColor: "{colors.primary}"
     textColor: "{colors.primary-foreground}"
@@ -193,6 +194,7 @@ components:
     rounded: "{rounded.lg}"
     border: "1px solid {colors.border}"
     padding: 24px
+    shadow: "0 8px 24px rgba(0,0,0,0.08)"
   toast:
     backgroundColor: "{colors.popover}"
     textColor: "{colors.popover-foreground}"
@@ -200,25 +202,27 @@ components:
     rounded: "{rounded.md}"
     border: "1px solid {colors.border}"
     padding: 12px 16px
+    shadow: "0 4px 12px rgba(0,0,0,0.08)"
 ---
 
 ## Overview
 
-The Vibiz skeleton ships a deliberately quiet, **dark-by-default** brand built on shadcn/ui (new-york style, zinc base) over Tailwind v4. The point of this default is to be **inoffensive and immediately replaceable** — a starting canvas, not a finished identity. When you brand the app for a real business, replace the tokens above and mirror the changes into `app/globals.css`.
+The Vibiz skeleton ships a deliberately quiet, **light-by-default** brand built on shadcn/ui (new-york style, zinc base) over Tailwind v4. The point of this default is to be **inoffensive and immediately replaceable** — a starting canvas, not a finished identity. When you brand the app for a real business, replace the tokens above and mirror the changes into `app/globals.css`.
 
 **Key characteristics of the default:**
-- Single accent: monochrome — `{colors.primary}` is near-white on dark, near-black on light. There is no second brand color until you add one.
-- Quiet chrome: borders are 10% white, dialogs and cards use the same `card` surface, no decorative gradients or shadows.
+- Light page (`{colors.background}` = pure white) with near-black text (`{colors.foreground}`). Editorial, calm, dashboard-friendly.
+- Single accent: monochrome — `{colors.primary}` is near-black so the primary CTA reads as "this is the one action that matters". There is no second brand color until you add one.
+- Quiet chrome: borders are a soft light gray (`{colors.border}`), cards are pure white on a pure white page (lifted by border + tiny shadow), no decorative gradients.
 - Compact rhythm: most controls are 36px tall (input, button-default). Cards live at `{rounded.xl}` (14px), buttons and inputs at `{rounded.md}` (8px).
 - Editorial typography: Geist Sans + Geist Mono. Display sizes lean tight with negative letter-spacing; body copy at 14px / 1.5 for dashboard density.
-- Dark mode is the default theme — `<html class="dark">` is set in `app/layout.tsx`. To switch a business to light-default, drop the class.
+- Light mode is the default theme — the root `<html>` carries no `class` attribute, so `:root` tokens apply. A dark-mode palette is also defined in `app/globals.css` under `.dark` for opt-in (add `class="dark"` to `<html>` or to a subtree). To make a real business dark-default, restore the `dark` class on `<html>` in `app/layout.tsx`.
 
 ## How DESIGN.md and `app/globals.css` relate
 
 This file is the **source of truth for the brand**. `app/globals.css` is the implementation. When they drift, this file wins; you bring `globals.css` back into line.
 
 For tokens added or changed here, mirror them in `globals.css`:
-- `colors:` → CSS variables under `.dark { ... }` (and `:root { ... }` if you support light mode)
+- `colors:` → CSS variables under `:root { ... }` for the default (light) theme. The dark counterpart lives under `.dark { ... }` — opt-in only.
 - `rounded:` → the `--radius` chain in `@theme inline`
 - `typography:` → `--font-sans`, `--font-mono`, and any new size scale you add as utility classes
 
@@ -226,25 +230,25 @@ shadcn primitives in `components/ui/` already consume these variables, so updati
 
 ## Colors
 
-> The default palette is the canonical shadcn **zinc** scale in dark mode. Light-mode equivalents live in `app/globals.css` under `:root` and can be referenced as needed — they are not enumerated here because the skeleton ships dark-first.
+> The default palette is the canonical shadcn **zinc** scale in **light mode**. A parallel dark palette exists in `app/globals.css` under `.dark` but is opt-in. The skeleton ships light-first.
 
 ### Surface
-- **Background** (`{colors.background}` — oklch(0.145 0 0)): The page canvas. Near-black neutral.
-- **Card / Popover** (`{colors.card}` / `{colors.popover}` — oklch(0.205 0 0)): A barely-lighter surface used for cards, dialogs, dropdowns, sheets, toasts. The minimal contrast keeps the hierarchy quiet.
-- **Secondary / Muted / Accent** (`{colors.secondary}` / `{colors.muted}` / `{colors.accent}` — oklch(0.269 0 0)): All three resolve to the same value in the default palette (shadcn's choice). Used for subtle backgrounds — code blocks, hover states, secondary buttons.
+- **Background** (`{colors.background}` — oklch(1 0 0)): Pure white page canvas.
+- **Card / Popover** (`{colors.card}` / `{colors.popover}` — oklch(1 0 0)): Same as background in the light default — cards lift off the page via `{colors.border}` + a hairline shadow, not via a surface-color shift. This is intentional: light mode reads cleanly with border-driven separation; in dark mode the equivalent step uses a brighter surface instead.
+- **Secondary / Muted / Accent** (`{colors.secondary}` / `{colors.muted}` / `{colors.accent}` — oklch(0.97 0 0)): All three resolve to the same very-light-gray in the default palette (shadcn's choice). Used for subtle backgrounds — secondary buttons, hover states, code blocks, muted info panels.
 
 ### Text
-- **Foreground** (`{colors.foreground}` — oklch(0.985 0 0)): Near-white. The voice of every paragraph and headline on dark.
-- **Muted Foreground** (`{colors.muted-foreground}` — oklch(0.708 0 0)): Secondary copy. Footnotes, captions, "Skeleton ready" hints.
+- **Foreground** (`{colors.foreground}` — oklch(0.145 0 0)): Near-black (not pure black). The voice of every paragraph and headline. Pure black would feel too harsh against the white canvas; near-black keeps the page editorial.
+- **Muted Foreground** (`{colors.muted-foreground}` — oklch(0.556 0 0)): Mid-gray for secondary copy — footnotes, captions, disabled labels, "Skeleton ready" hints.
 
 ### Action
-- **Primary** (`{colors.primary}` — oklch(0.922 0 0)): On dark, primary is near-white (inverted contrast). Buttons read as quiet, confident, monochrome. **This is intentional and on-brand for the default.** When a real business needs a brand accent, replace this token with their accent and the primary CTAs adopt it everywhere.
-- **Destructive** (`{colors.destructive}` — oklch(0.704 0.191 22.216)): The one chromatic value — a warm red used only for danger / destructive actions.
+- **Primary** (`{colors.primary}` — oklch(0.205 0 0)): Near-black. On light backgrounds, primary is dark so the primary CTA reads as the dominant action. **This is intentional and on-brand for the default.** When a real business needs a brand accent, replace this token with their accent and every primary CTA adopts it.
+- **Destructive** (`{colors.destructive}` — oklch(0.577 0.245 27.325)): The one chromatic value — a warm red used only for danger / destructive actions.
 
 ### Borders
-- **Border** (`{colors.border}` — oklch(1 0 0 / 10%)): Card edges, separators, input borders. White at 10% alpha so the line lives on top of the surface without claiming attention.
-- **Input** (`{colors.input}` — oklch(1 0 0 / 15%)): A touch more present than `border` so inputs read as interactive.
-- **Ring** (`{colors.ring}` — oklch(0.556 0 0)): Focus ring on keyboard-focused interactive elements.
+- **Border** (`{colors.border}` — oklch(0.922 0 0)): Soft light gray. Card edges, separators, input borders. Carries hierarchy in light mode where surface contrast can't.
+- **Input** (`{colors.input}` — oklch(0.922 0 0)): Same as border by default — inputs share the line weight of cards. Diverge if you want inputs to feel more present.
+- **Ring** (`{colors.ring}` — oklch(0.708 0 0)): Focus ring on keyboard-focused interactive elements. Mid-gray so it's visible against white without screaming.
 
 ## Typography
 
@@ -274,6 +278,7 @@ Geist is Vercel's typeface and is the default Next.js skeleton font; we keep it 
 - **Body at 14px, not 16px.** This is the shadcn dashboard convention — denser than typical marketing copy, which is what you want for tools. Marketing pages can step up to 16px or `{typography.lead}` (18px) where copy density matters less than reading rhythm.
 - **Weight ladder is 400 / 500 / 600.** The default does not use 700 or 300. Step UP to 500 for emphasis, UP again to 600 for headlines. Step down to 400 for everything else.
 - **Eyebrow tracking is wide.** `{typography.eyebrow}` is the only token using positive letter-spacing — `0.2em` for uppercase eyebrows over headlines.
+- **Near-black, not pure black.** Body and display text use `{colors.foreground}` = oklch(0.145 0 0) — softer than `#000` so the page feels editorial rather than printed.
 
 ## Layout
 
@@ -296,13 +301,16 @@ Dense enough to feel like a tool, generous enough to feel modern. Marketing sect
 
 | Level | Treatment | Use |
 |---|---|---|
-| Flat | No shadow, no border | Page background, header, footer body |
+| Flat | No shadow, no border | Page background, header (border-bottom only), footer body |
 | Hairline | 1px `{colors.border}` | Cards, dialog edges, input borders, separators |
-| Soft shadow | `shadow-sm` (Tailwind) | Cards on the landing features grid (very subtle) |
-| Popover shadow | `shadow-md` (Tailwind) | Dropdown menu, dialog overlay surfaces |
-| Overlay | `bg-black/50` | Modal scrim — the only place pure black appears |
+| Card shadow | `shadow-sm` (Tailwind ≈ `0 1px 2px rgba(0,0,0,0.04)`) | Cards lift gently off the white canvas |
+| Popover shadow | `shadow-md` (≈ `0 4px 12px rgba(0,0,0,0.08)`) | Dropdown menu, toast, tooltip |
+| Dialog shadow | `shadow-lg` (≈ `0 8px 24px rgba(0,0,0,0.08)`) | Modal cards above the scrim |
+| Overlay | `bg-black/50` | Modal scrim — the only place pure black appears, behind dialogs |
 
-**Shadow philosophy.** Dark mode hides shadows. Elevation in the default brand comes from **surface contrast** (`background` → `card` → `popover` is a ladder of barely-lighter neutrals) and **borders**, not drop-shadows. Reserve `shadow-md` for popover-class elements (dropdowns, dialogs) where the float effect carries information.
+**Shadow philosophy.** Light mode is where shadows carry information. The default brand uses **three tiers of shadow** (sm / md / lg) that align with the elevation a surface should feel at: a card is "barely lifted", a dropdown is "floating over content", a modal is "above the page". Reserve `shadow-lg` for true modal-class surfaces — overusing it flattens the hierarchy.
+
+When the brand swaps to dark mode (opt-in via the `.dark` class), shadows largely disappear and elevation shifts to surface contrast (`background` → `card` → `popover` is a ladder of barely-lighter neutrals). Both layers are defined in `globals.css`.
 
 ## Shapes
 
@@ -323,18 +331,18 @@ The default brand leans on `{rounded.md}` for almost every interactive control. 
 
 The shadcn primitives in `components/ui/` are the implementation of the tokens below. When a real business needs a different button shape, update the relevant component file AND this DESIGN.md.
 
-- **`button-default`** — Primary action. `{component.button-default}` — 36px tall, `{rounded.md}`, `{colors.primary}` fill on `{colors.primary-foreground}` text. Used for the dominant CTA on each page.
+- **`button-default`** — Primary action. `{component.button-default}` — 36px tall, `{rounded.md}`, `{colors.primary}` (near-black) fill on `{colors.primary-foreground}` (near-white) text. Used for the dominant CTA on each page.
 - **`button-destructive`** — Danger action. Same shape; `{colors.destructive}` fill. Used for delete / irreversible operations.
 - **`button-outline`** — Secondary action. Transparent fill, 1px `{colors.border}`, foreground text. Used as the second CTA when paired with `button-default`.
 - **`button-ghost`** — Tertiary action. Transparent fill, no border, foreground text. Used for low-emphasis actions (header nav links, "Cancel" in dialogs).
-- **`button-secondary`** — Compact action. `{colors.secondary}` fill, used inside cards or in tight UI where outline would feel busy.
+- **`button-secondary`** — Compact action. `{colors.secondary}` (very-light-gray) fill, used inside cards or in tight UI where outline would feel busy.
 - **`input`** — Text input. 36px tall, `{rounded.md}`, transparent on `{colors.input}` border. Always paired with a `Label` from `components/ui/label.tsx`.
-- **`card`** — Container. `{colors.card}` fill, `{rounded.xl}`, 24px padding. Composed from `Card`, `CardHeader`, `CardTitle`, `CardDescription`, `CardContent`, `CardFooter`, `CardAction` in `components/ui/card.tsx`.
+- **`card`** — Container. `{colors.card}` (white) fill, `{rounded.xl}`, 24px padding, 1px `{colors.border}`, hairline `shadow-sm`. Composed from `Card`, `CardHeader`, `CardTitle`, `CardDescription`, `CardContent`, `CardFooter`, `CardAction` in `components/ui/card.tsx`.
 - **`badge-default` / `-secondary` / `-outline`** — Status pills. 12px caption-strong text at `{rounded.md}`. Used for status indicators ("New", "Beta", "Done").
-- **`site-header`** — Sticky top chrome. 56px tall, `{colors.background}` with `backdrop-blur`, 1px bottom `{colors.border}`. Implementation in `components/site-header.tsx`.
+- **`site-header`** — Sticky top chrome. 56px tall, `{colors.background}` (white) with `backdrop-blur`, 1px bottom `{colors.border}`. Implementation in `components/site-header.tsx`.
 - **`site-footer`** — Multi-column footer. `{colors.background}`, `{colors.muted-foreground}` text, 48px padding. Implementation in `components/site-footer.tsx`.
-- **`dialog`** — Modal. `{colors.background}` fill, `{rounded.lg}`, 24px padding, centered with `bg-black/50` overlay. Implementation in `components/ui/dialog.tsx`.
-- **`toast`** — Sonner toast. `{colors.popover}` fill, `{rounded.md}`. Mounted in `app/layout.tsx`; usage: `import { toast } from "sonner"`.
+- **`dialog`** — Modal. `{colors.background}` fill, `{rounded.lg}`, 24px padding, `shadow-lg`, centered with `bg-black/50` overlay. Implementation in `components/ui/dialog.tsx`.
+- **`toast`** — Sonner toast. `{colors.popover}` (white) fill, `{rounded.md}`, `shadow-md`. Mounted in `app/layout.tsx`; usage: `import { toast } from "sonner"`.
 
 ## Do's and Don'ts
 
@@ -344,14 +352,15 @@ The shadcn primitives in `components/ui/` are the implementation of the tokens b
 - Use shadcn primitives instead of raw `<button>` / `<input>` so the tokens flow through automatically.
 - Add a real accent color in `{colors.primary}` when the brand has one — every interactive element picks it up.
 - Use `{colors.destructive}` only for irreversible danger; not for "warning" or "incomplete" states.
-- Lean on surface contrast (`background` → `card` → `popover`) for hierarchy before reaching for shadows.
+- Use shadow tiers to communicate elevation hierarchy (card < popover < dialog). Don't flatten everything to `shadow-sm`.
 
 ### Don't
 - Don't hardcode hex / oklch values in components — always reference a token (`bg-primary`, `text-muted-foreground`, etc.).
 - Don't introduce a second brand accent without updating this file. Two accent colors with no documentation here means the brand drifted.
 - Don't change `{colors.destructive}` to a different hue without explicit reason — red-orange is the established convention.
 - Don't mix radii grammars — buttons/inputs stay at `{rounded.md}`, cards at `{rounded.xl}`, dialogs at `{rounded.lg}`. Going off-scale (e.g. button at `{rounded.lg}`) breaks the visual rhythm.
-- Don't add drop-shadows to cards in dark mode — they don't carry information. Surface contrast + border is the elevation system.
+- Don't use `text-black` / `text-white` — use `{colors.foreground}` / `{colors.background}` semantic tokens so dark-mode opt-in works.
+- Don't switch to dark mode silently. If a business should be dark-default, restore `class="dark"` on `<html>` in `app/layout.tsx` AND update this file's `description` + token enumeration to reflect that.
 
 ## Iteration Guide
 
@@ -363,7 +372,7 @@ The shadcn primitives in `components/ui/` are the implementation of the tokens b
 
 ## Known Gaps
 
-- Light-mode tokens exist in `globals.css` (`:root`) but are not enumerated in this file — the skeleton ships dark-first. If a business goes light-default, fold the `:root` values into a parallel `colors-light:` section.
+- Dark-mode tokens exist in `globals.css` (`.dark`) but are not enumerated in this file — the skeleton ships light-first. If a business goes dark-default, fold the `.dark` values into a parallel `colors-dark:` section here.
 - Chart colors are not yet tokenized (no `--chart-1 … --chart-5`). Add them when the first dashboard with charts ships.
 - Hover / active states for shadcn primitives are derived in-component (e.g. `hover:bg-primary/90`) rather than documented here. Document them explicitly only if a brand needs to override the default opacity treatment.
 - The default mono font is Geist Mono; a business that uses a specific code font (JetBrains Mono, Fira Code) should swap the `next/font` import and update `{typography.mono.fontFamily}` here.
