@@ -47,6 +47,18 @@ The skeleton ships a working **marketing landing** at `/` and a stub
 
 Brand placeholder is **"Acme"** in both header and footer — change in those two files. Copy throughout the landing is intentionally generic; replace the hero h1, the feature blurbs, and the CTA copy with what your product actually does.
 
+## Delete what you don't need
+
+The skeleton ships **opinionated defaults**, not minimums. Anything that doesn't fit your product can — and should — be deleted, not left as dead weight:
+
+- Don't need a marketing landing? Replace `app/page.tsx` with `redirect("/dashboard")` (or whatever your real entry is) and delete the hero/features/CTA sections.
+- Don't need user accounts? Delete `app/login/`, `app/signup/`, `app/api/auth/`, `lib/auth/`, drop `@neondatabase/auth` from `package.json`, and remove the auth-aware branches in the header.
+- Don't need a database? Delete `db/`, `drizzle/`, `drizzle.config.ts`, `lib/db.ts`, `lib/db/queries.ts`, `scripts/migrate.mjs`, drop `drizzle-orm` + `@neondatabase/serverless` + `pg` from `package.json`, remove the `prebuild` script.
+- Don't need a footer / nav menu / dropdowns / sheets / etc.? Delete the components and the imports.
+- Don't need the Vibiz visual editor overlay? Delete `app/_vibiz/`, `babel-plugin-vibiz-locator.cjs`, `.babelrc.js`, drop the `<VibizEditorOverlay />` mount from `app/layout.tsx` (Next.js will switch back to SWC for ~10× faster builds).
+
+The skeleton is a starting point, not a contract. Less code in the final repo = less surface area for bugs and faster builds.
+
 ## Database queries
 
 - Pattern guide in `lib/db/queries.ts` — typed Drizzle queries with these conventions:

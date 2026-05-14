@@ -7,7 +7,19 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Sparkles } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { authClient } from "@/lib/auth/client";
 
 export default function SignupPage() {
@@ -34,73 +46,87 @@ export default function SignupPage() {
       setPending(false);
       return;
     }
-    router.push("/");
+    router.push("/dashboard");
     router.refresh();
   }
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center gap-6 px-6 py-16">
-      <header>
-        <h1 className="text-2xl font-semibold tracking-tight">
-          Create your account
-        </h1>
-        <p className="mt-1 text-sm text-zinc-400">
-          Email and password — that&apos;s it.
-        </p>
-      </header>
-
-      {error ? (
-        <div className="rounded-md border border-red-900 bg-red-950/40 px-3 py-2 text-sm text-red-200">
-          {error}
+    <main className="mx-auto flex min-h-screen w-full max-w-md flex-1 flex-col justify-center gap-6 px-4 py-12">
+      <Link href="/" className="flex items-center gap-2 self-start">
+        <div className="bg-foreground flex size-6 items-center justify-center rounded-md">
+          <Sparkles className="text-background size-3.5" />
         </div>
-      ) : null}
+        <span className="font-semibold">Acme</span>
+      </Link>
 
-      <form onSubmit={onSubmit} className="flex flex-col gap-3">
-        <label className="flex flex-col gap-1 text-xs uppercase tracking-wider text-zinc-500">
-          Name
-          <input
-            type="text"
-            name="name"
-            autoComplete="name"
-            className="rounded-md border border-zinc-800 bg-transparent px-3 py-2 text-sm text-zinc-100 outline-none focus:border-zinc-500"
-          />
-        </label>
-        <label className="flex flex-col gap-1 text-xs uppercase tracking-wider text-zinc-500">
-          Email
-          <input
-            type="email"
-            name="email"
-            required
-            autoComplete="email"
-            className="rounded-md border border-zinc-800 bg-transparent px-3 py-2 text-sm text-zinc-100 outline-none focus:border-zinc-500"
-          />
-        </label>
-        <label className="flex flex-col gap-1 text-xs uppercase tracking-wider text-zinc-500">
-          Password
-          <input
-            type="password"
-            name="password"
-            required
-            minLength={8}
-            autoComplete="new-password"
-            className="rounded-md border border-zinc-800 bg-transparent px-3 py-2 text-sm text-zinc-100 outline-none focus:border-zinc-500"
-          />
-        </label>
-        <button
-          type="submit"
-          disabled={pending}
-          className="mt-2 rounded-md border border-zinc-700 px-3 py-2 text-sm hover:bg-zinc-900 disabled:opacity-60"
-        >
-          {pending ? "Creating account…" : "Create account"}
-        </button>
-      </form>
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-2xl">Create your account</CardTitle>
+          <CardDescription>Email and password — that&apos;s it.</CardDescription>
+        </CardHeader>
 
-      <p className="text-xs text-zinc-500">
-        Already have an account?{" "}
-        <Link href="/login" className="underline hover:text-zinc-300">
-          Sign in
-        </Link>
-      </p>
+        <CardContent>
+          <form id="signup-form" onSubmit={onSubmit} className="grid gap-4">
+            {error ? (
+              <p
+                role="alert"
+                className="border-destructive/40 bg-destructive/10 text-destructive rounded-md border px-3 py-2 text-sm"
+              >
+                {error}
+              </p>
+            ) : null}
+
+            <div className="grid gap-2">
+              <Label htmlFor="name">Name</Label>
+              <Input
+                id="name"
+                type="text"
+                name="name"
+                autoComplete="name"
+                placeholder="Jane Doe"
+              />
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                name="email"
+                required
+                autoComplete="email"
+                placeholder="you@example.com"
+              />
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                name="password"
+                required
+                minLength={8}
+                autoComplete="new-password"
+              />
+            </div>
+
+            <Button type="submit" disabled={pending} className="mt-2">
+              {pending ? "Creating account…" : "Create account"}
+            </Button>
+          </form>
+        </CardContent>
+
+        <CardFooter className="text-muted-foreground border-t pt-6 text-sm">
+          Already have an account?
+          <Link
+            href="/login"
+            className="text-foreground ml-1 underline-offset-4 hover:underline"
+          >
+            Sign in
+          </Link>
+        </CardFooter>
+      </Card>
     </main>
   );
 }
