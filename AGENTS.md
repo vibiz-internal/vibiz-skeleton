@@ -35,6 +35,44 @@ DESIGN.md follows the [Google Labs DESIGN.md spec](https://github.com/google-lab
 - **Per-user identification** (when the user logs in via Neon Auth): `posthog.identify(userId, { email })` inside the post-login flow. Reset on logout with `posthog.reset()`.
 - **Opt-out of recording on sensitive routes** (e.g. password reset, payment forms): `posthog.opt_out_capturing()` on mount of that page, `posthog.opt_in_capturing()` on unmount.
 
+## Payments (Stripe via Vibiz)
+
+This app DOES NOT contain Stripe SDK code, API keys, or webhook handlers. Payments are managed end-to-end by the Vibiz platform via Stripe Connect — the founder OAuth-connects their own Stripe account to Vibiz, the platform mints Payment Links on their behalf, and a centralized webhook on the platform handles `checkout.session.completed` events and grants entitlements. The customer app is just the storefront + the post-payment confirmation page.
+
+### Reading offers (Buy buttons)
+
+- **`lib/offers.ts`** is a server-side helper that reads `data/offers.json` (seeded by the Vibiz platform). Use it from any server component to render Buy buttons:
+  ```tsx
+  import { getSeededOffers } from "@/lib/offers";
+  const offers = await getSeededOffers();
+  return offers.map(o => (
+    <a href={o.paymentLinkUrl} className="...">Buy {o.title} — {(o.priceCents/100).toFixed(2)} {o.priceCurrency}</a>
+  ));
+  ```
+  Layout (single CTA, pricing table, hero button) is your call — the helper just returns the data. The list is empty on a fresh clone (no offers configured); render a fallback or hide the section if it returns `[]`.
+- **⚠️ DO NOT edit `data/offers.json` by hand.** The platform writes it via the GitHub Contents API whenever the founder creates / approves / archives an offer. Manual edits will be overwritten on the next sync.
+- **⚠️ DO NOT install the `stripe` SDK** here. There's nothing to call from the customer app — Payment Link URLs are just `<a href>` targets that open Stripe-hosted checkout.
+
+### Post-payment confirmation
+
+- **`app/payment-success/page.tsx`** is the page Stripe redirects buyers to after a successful checkout. It exchanges the `session_id` query param for the entitlement payload via the Vibiz runtime API (`lib/entitlements.ts > claimEntitlement`), then renders a confirmation. The route is referenced by Stripe via `after_completion.redirect.url` configured at Payment Link creation time, so its existence + path are load-bearing.
+- **⚠️ DO NOT delete or rename `app/payment-success/page.tsx`** — Stripe's redirect URL is fixed to `<live_url>/payment-success?session_id={CHECKOUT_SESSION_ID}`. You can wrap it in your branded layout, customize the success copy, add follow-up CTAs ("download your guide", "join the community"), but the `claimEntitlement(sessionId)` call must remain — without it, the buyer's entitlement is granted server-side on Vibiz but the customer-facing UI has no way to confirm + show what was unlocked.
+
+### Gating features behind a paid entitlement
+
+- **`lib/entitlements.ts > checkEntitlement({ entitlementKey, buyerEmail? | externalUserId? })`** returns `{ active: boolean, entitlement?: ... }`. Use it from server components / route handlers to gate premium content:
+  ```ts
+  import { checkEntitlement } from "@/lib/entitlements";
+  const { active } = await checkEntitlement({
+    entitlementKey: "pro-monthly",
+    externalUserId: session.user.id, // from Neon Auth, if logged in
+  });
+  if (!active) return <UpgradeWall />;
+  ```
+- The `entitlementKey` matches the offer's `slug`. Look up slugs in `data/offers.json` or via the dashboard's Offerte modal.
+- For best UX with auth: when the user logs in (Neon Auth post-login flow), call `claimEntitlement(sessionId, { externalUserId: user.id })` once on `/payment-success` so the entitlement gets linked to their user id. Subsequent `checkEntitlement({ externalUserId })` calls then resolve fast.
+- **Required env (Vibiz injects)**: `VIBIZ_RUNTIME_URL` — the Vibiz platform URL (e.g. `https://youss.ngrok.app` in dev). Falls back to a hardcoded dev URL when missing.
+
 ## URL state
 
 - **`nuqs`** is installed and the `<NuqsAdapter>` is mounted in `app/layout.tsx`. Use it for any state that should survive a refresh or be shareable via URL — filters, pagination, search query, "open modal" flags.
