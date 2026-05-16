@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 
@@ -34,7 +35,16 @@ export default function RootLayout({
     >
       <body className="flex min-h-full flex-col">
         <Analytics>
-          <NuqsAdapter>{children}</NuqsAdapter>
+          {/* NuqsAdapter calls useSearchParams() internally. Without the
+              Suspense boundary, static prerendering of any client-component
+              page (e.g. /login, /signup, /_not-found) hits Next's CSR
+              bailout check at build time and the whole build fails.
+              Wrapping children once at the root means every page is
+              prerender-safe, regardless of how the CTO writes individual
+              routes. */}
+          <NuqsAdapter>
+            <Suspense fallback={null}>{children}</Suspense>
+          </NuqsAdapter>
         </Analytics>
         <Toaster />
         <VibizEditorOverlay />
