@@ -21,6 +21,13 @@ const eslintConfig = defineConfig([
       "@typescript-eslint/no-require-imports": "off",
     },
   },
+  // Italian copy is full of apostrophes — escaping every one as
+  // &apos; in JSX text is pure noise. The character renders fine.
+  {
+    rules: {
+      "react/no-unescaped-entities": "off",
+    },
+  },
 ]);
 
 export default eslintConfig;
